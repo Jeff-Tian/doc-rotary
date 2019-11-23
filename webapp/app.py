@@ -1,48 +1,53 @@
-from flask import Flask
-import tushare as ts
-from flask_socketio import SocketIO, emit
-from flask_cors import CORS
+import os
+from uuid import uuid4
+from flask import Flask, render_template, request, jsonify, send_from_directory
+from subprocess import TimeoutExpired
+from common.config import cfg as config
+from common.docx2pdf import LibreOfficeError, convert_to
+from common.errors import RestAPIError, InternalServerErrorError
+from common.files import uploads_url, save_to
 
-app = Flask(__name__)
-socketio = SocketIO(app)
-CORS(app)
+app = Flask(__name__, static_url_path='')
 
 
 @app.route('/')
 def hello():
-    return 'Hello world!'
+    return render_template('home.html')
 
 
-@app.route('/blotter/<symbol>')
-def blotterDetail(symbol=None):
-    print('symbole = ', symbol)
-    df = ts.get_realtime_quotes(symbol)
-    json = df.loc[0].to_json()
-    print(json)
-    return json
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    upload_id = str(uuid4())
+    source = save_to(os.path.join(
+        config['uploads_dir'], 'source', upload_id), request.files['file'])
+
+    try:
+        result = convert_to(os.path.join(
+            config['uploads_dir'], 'pdf', upload_id), source, timeout=15)
+    except LibreOfficeError:
+        raise InternalServerErrorError(
+            {'message': 'Error when converting file to PDF'})
+    except TimeoutExpired:
+        raise InternalServerErrorError(
+            {'message': 'Timeout when converting file to PDF'})
+
+    return jsonify({'result': {'source': uploads_url(source), 'pdf': uploads_url(result)}})
 
 
-@app.route('/market')
-def market():
-    print('fetching market...')
-    df = ts.get_today_all()
-    print('df = ', df)
-    json = df.to_json(orient='records')
-    print(json)
-    return json
+@app.route('/uploads/<path:path>', methods=['GET'])
+def serve_uploads(path):
+    return send_from_directory(config['uploads_dir'], path)
 
 
-@socketio.on('blotter-detail')
-def blotterDetailSocket(symbol=None):
-    emit('blotter-detail-response', {'data': 'got it'})
+@app.errorhandler(500)
+def handle_500_error():
+    return InternalServerErrorError().to_response()
 
 
-@socketio.on('send_message')
-def handle_source(json_data):
-    text = json_data['message'].encode('ascii', 'ignore')
-    socketio.emit('echo', {'echo': 'Server Says: ' + text})
+@app.errorhandler(RestAPIError)
+def handle_rest_api_error(error):
+    return error.to_response()
 
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0')
-    socketio.run(app)
+    app.run(host='0.0.0.0', threaded=True)

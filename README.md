@@ -1,4 +1,4 @@
-bitq -  比特Q
+doc-rotary -  比特Q
 ---
 
 ## 本地运行
@@ -20,13 +20,13 @@ sh test.sh
 ```
 heroku login
 heroku container:login
-heroku container:push web -a bitqbit
-heroku container:release web -a bitqbit
-heroku open -a bitqbit
+heroku container:push web -a doc-rotarybit
+heroku container:release web -a doc-rotarybit
+heroku open -a doc-rotarybit
 ```
 
 ## 看日志：
 
 ```shell
-heroku logs --tail -a bitqbit
+heroku logs --tail -a doc-rotarybit
 ```

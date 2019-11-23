@@ -1,29 +1,19 @@
-#Grab the latest alpine image
-#FROM alpine:latest
-FROM python:latest
+FROM ubuntu:17.04
 
-# Install python and pip
-#RUN apk add --no-cache --update python3 py3-pip bash
-ADD ./webapp/requirements.txt /tmp/requirements.txt
+RUN apt-get update
+RUN apt-get install -y python3 python3-pip
+RUN apt-get install -y build-essential libssl-dev libffi-dev python-dev
+RUN apt-get install -y libreoffice
 
-# Install dependencies
-RUN pip3 install --upgrade pip
-RUN pip3 install --no-cache-dir -v -r /tmp/requirements.txt
+ADD webapp /webapp
+ADD fonts /usr/share/fonts/
 
-RUN cat /usr/local/lib/python3.7/site-packages/tushare/stock/trading.py
-RUN sed -i "s/urlopen(request, timeout=10)/urlopen(request, timeout=60)/g" "/usr/local/lib/python3.7/site-packages/tushare/stock/trading.py"
-RUN cat /usr/local/lib/python3.7/site-packages/tushare/stock/trading.py
+WORKDIR /webapp
 
-# Add our code
-ADD ./webapp /opt/webapp/
-WORKDIR /opt/webapp
+RUN pip3 install -r requirements.txt
 
-# Expose is NOT supported by Heroku
-# EXPOSE 5000 		
-
-# Run the image as a non-root user
-#RUN adduser -D myuser
-#USER myuser
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 # Run the app.  CMD is required to run on Heroku
 # $PORT is set by Heroku			

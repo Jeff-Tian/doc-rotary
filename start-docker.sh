@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-docker build -t bitq --file ./Dockerfile .
-docker kill bitq || "already killed"
-docker rm bitq || "already removed"
+docker build -t doc-rotary --file ./Dockerfile .
+docker kill doc-rotary || "already killed"
+docker rm doc-rotary || "already removed"
 echo "running..."
-echo "docker run -p 127.0.0.1:8888:80 -e PORT=80 --name bitq bitq"
+echo "docker run -p 127.0.0.1:8888:80 -e PORT=80 --name doc-rotary doc-rotary"
 
-docker run -p 127.0.0.1:8888:80 -e PORT=80 --name bitq bitq
+docker run -p 127.0.0.1:8888:80 -e PORT=80 --name doc-rotary doc-rotary

@@ -1,9 +1,2 @@
 gunicorn
 Flask
-Jinja2
-Werkzeug
-numpy
-pandas
-tushare
-flask-socketio
-flask_cors
