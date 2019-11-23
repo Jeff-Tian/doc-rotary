@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-heroku container:push web -a doc-rotarybit
-heroku container:release web -a doc-rotarybit
-heroku open -a doc-rotarybit
+heroku container:push web -a doc-rotary
+heroku container:release web -a doc-rotary
+heroku open -a doc-rotary
