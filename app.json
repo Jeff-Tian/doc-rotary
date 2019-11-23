@@ -1,0 +1,10 @@
+{
+  "environments": {
+    "test": {
+      "scripts": {
+        "test-setup": "cd webapp && pip3 install -r requirements.txt && cd ..",
+        "test": "cd webapp && python3 tests.py && cd .."
+      }
+    }
+  }
+}
