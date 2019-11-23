@@ -28,7 +28,7 @@ def upload_file():
             config['uploads_dir'], 'pdf', upload_id), source, timeout=15)
 
         s3 = boto3.resource('s3')
-        s3.meta.client.upload_file(result, 'dqdkbi8zxasp', result)
+        s3.meta.client.upload_file(result[1:], 'dqdkbi8zxasp', result)
 
     except LibreOfficeError:
         raise InternalServerErrorError(
