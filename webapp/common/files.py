@@ -1,6 +1,6 @@
 # common/files.py
 import os
-from config import cfg as config
+from common.config import cfg as config
 from werkzeug.utils import secure_filename
 
 

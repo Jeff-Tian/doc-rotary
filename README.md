@@ -30,3 +30,11 @@ heroku open -a doc-rotarybit
 ```shell
 heroku logs --tail -a doc-rotarybit
 ```
+
+## 镜像信息：
+
+```shell
+REPOSITORY                           TAG                 IMAGE ID            CREATED             SIZE
+registry.heroku.com/doc-rotary/web   latest              cc97cb425cde        4 minutes ago       1.33GB
+ubuntu                               18.04               775349758637        3 weeks ago         64.2MB
+```
