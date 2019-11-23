@@ -6,6 +6,7 @@ from common.config import cfg as config
 from common.docx2pdf import LibreOfficeError, convert_to
 from common.errors import RestAPIError, InternalServerErrorError
 from common.files import uploads_url, save_to
+import boto3
 
 app = Flask(__name__, static_url_path='')
 
@@ -25,6 +26,10 @@ def upload_file():
     try:
         result = convert_to(os.path.join(
             config['uploads_dir'], 'pdf', upload_id), source, timeout=15)
+
+        s3 = boto3.resource('s3')
+        s3.meta.client.upload_file(result, 'dqdkbi8zxasp', result)
+
     except LibreOfficeError:
         raise InternalServerErrorError(
             {'message': 'Error when converting file to PDF'})
