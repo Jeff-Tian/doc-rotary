@@ -1,12 +1,11 @@
 import os
 from uuid import uuid4
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, send_file
 from subprocess import TimeoutExpired
 from common.config import cfg as config
 from common.docx2pdf import LibreOfficeError, convert_to
 from common.errors import RestAPIError, InternalServerErrorError
 from common.files import uploads_url, save_to
-import boto3
 
 app = Flask(__name__, static_url_path='')
 
@@ -27,8 +26,7 @@ def upload_file():
         result = convert_to(os.path.join(
             config['uploads_dir'], 'pdf', upload_id), source, timeout=15)
 
-        s3 = boto3.resource('s3')
-        s3.meta.client.upload_file(result, 'dqdkbi8zxasp', result[1:])
+        return send_file(uploads_url(result))
 
     except LibreOfficeError:
         raise InternalServerErrorError(
